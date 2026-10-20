@@ -1,0 +1,6 @@
+@WebTechLab_HostAddress = http://localhost:5010
+
+GET {{WebTechLab_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
