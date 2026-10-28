@@ -62,6 +62,26 @@ namespace WebTechLab.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("WebTechLab.Models.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("WebTechLab.Models.Product", b =>
                 {
                     b.HasOne("WebTechLab.Models.Category", "Category")
@@ -71,6 +91,17 @@ namespace WebTechLab.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("WebTechLab.Models.Review", b =>
+                {
+                    b.HasOne("WebTechLab.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("WebTechLab.Models.Category", b =>

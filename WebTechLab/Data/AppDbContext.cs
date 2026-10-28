@@ -9,5 +9,6 @@ namespace WebTechLab.Data
 
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Category> Categories => Set<Category>();
+        public DbSet<Review> Reviews { get; set; }
     }
 }
