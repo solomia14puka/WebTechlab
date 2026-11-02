@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using WebTechLab.Data;
 using WebTechLab.Models;
+using Microsoft.AspNetCore.SignalR;
+using WebTechLab.Hubs;
 
 namespace WebTechLab.Controllers
 {
@@ -10,10 +12,12 @@ namespace WebTechLab.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public ProductsController(AppDbContext context)
+        public ProductsController(AppDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         // GET: api/products (READ)
@@ -54,7 +58,9 @@ namespace WebTechLab.Controllers
         {
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
-
+            // Надсилання повідомлення всім підключеним клієнтам через SignalR
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", $"Новинка у каталозі: {product.Name}!");
+            
             return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
 
@@ -100,5 +106,21 @@ namespace WebTechLab.Controllers
 
             return NoContent(); 
         }
+
+        [HttpGet("search")]
+        public IActionResult SearchProducts([FromQuery] string q)
+        {
+            if (string.IsNullOrWhiteSpace(q) || q.Length < 3)
+            {
+                return Ok(new List<Product>());
+            }
+
+            var results = _context.Products
+                .Where(p => p.Name.ToLower().Contains(q.ToLower()))
+                .Take(10)
+                .ToList();
+
+            return Ok(results);
+        } 
     }
 }

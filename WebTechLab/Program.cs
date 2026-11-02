@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebTechLab.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,9 +22,21 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
     });
 });
+
+builder.Services.AddMemoryCache();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://accounts.google.com";
+        options.Audience = "82571943442-s1gevchga4fd5nt4etdojp3np27au9ud.apps.googleusercontent.com";
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -38,6 +51,9 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.UseCors("AllowReact");
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
+app.MapHub<WebTechLab.Hubs.NotificationHub>("/notifications");
 
 app.Run();

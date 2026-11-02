@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using System;
+using System.Linq;
 using WebTechLab.Data;
 using WebTechLab.Models;
-using System.Linq;
 
 namespace WebTechLab.Controllers
 {
@@ -10,10 +13,12 @@ namespace WebTechLab.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMemoryCache _memoryCache;
 
-        public CategoriesController(AppDbContext context)
+        public CategoriesController(AppDbContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _memoryCache = memoryCache;
         }
 
         [HttpGet]
@@ -25,11 +30,23 @@ namespace WebTechLab.Controllers
         [HttpGet("{id}")]
         public IActionResult GetCategory(int id)
         {
-            var category = _context.Categories.Find(id);
-            if (category == null) return NotFound();
-            return Ok(category);
+            string cacheKey = "categories_list";
+            if (!_memoryCache.TryGetValue(cacheKey, out var categories))
+            {
+                categories = _context.Categories.ToList();
+
+                var cacheOptions = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+
+                _memoryCache.Set(cacheKey, categories, cacheOptions);
+            }
+
+            return Ok(categories);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
@@ -49,6 +66,7 @@ namespace WebTechLab.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult DeleteCategory(int id)
         {
