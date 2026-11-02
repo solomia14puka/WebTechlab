@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", policy =>
     {
-        policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+        policy.WithOrigins("http://webtechlab-six.vercel.app").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
     });
 });
 

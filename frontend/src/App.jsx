@@ -16,7 +16,7 @@ function Catalog() {
     useEffect(() => {
         const token = localStorage.getItem('google_token');
 
-        axios.get('http://localhost:5010/api/products', {
+        axios.get('https://api.render.com/deploy/srv-dbkgc0m1egvs7394sudg?key=DI--hvjFpcY/api/products', {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -89,7 +89,7 @@ function App() {
 
     useEffect(() => {
         const connection = new HubConnectionBuilder()
-            .withUrl("http://localhost:5010/notifications")
+            .withUrl("https://api.render.com/deploy/srv-dbkgc0m1egvs7394sudg?key=DI--hvjFpcY/notifications")
             .withAutomaticReconnect()
             .build();
 

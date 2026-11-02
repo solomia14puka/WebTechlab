@@ -15,7 +15,7 @@ export default function AutocompleteSearch() {
             }
 
             try {
-                const response = await axios.get(`http://localhost:5010/api/products/search?q=${query}`);
+                const response = await axios.get(`https://api.render.com/deploy/srv-dbkgc0m1egvs7394sudg?key=DI--hvjFpcY/api/products/search?q=${query}`);
                 setResults(response.data);
                 setIsOpen(true);
             } catch (error) {

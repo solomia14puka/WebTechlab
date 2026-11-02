@@ -22,8 +22,8 @@ export default function Statistics() {
         };
 
         Promise.all([
-            axios.get('http://localhost:5010/api/categories', config),
-            axios.get('http://localhost:5010/api/products', config)
+            axios.get('https://api.render.com/deploy/srv-dbkgc0m1egvs7394sudg?key=DI--hvjFpcY/api/categories', config),
+            axios.get('https://api.render.com/deploy/srv-dbkgc0m1egvs7394sudg?key=DI--hvjFpcY/api/products', config)
         ]).then(([categoriesRes, productsRes]) => {
             const categories = categoriesRes.data;
             const products = productsRes.data;
