@@ -60,7 +60,24 @@ namespace WebTechLab.Controllers
             await _context.SaveChangesAsync();
             // Надсилання повідомлення всім підключеним клієнтам через SignalR
             await _hubContext.Clients.All.SendAsync("ReceiveNotification", $"Новинка у каталозі: {product.Name}!");
-            
+
+            // 2. Інтеграція Telegram API (B2)
+            try
+            {
+                string botToken = "8986964757:AAFZLzPnXqpFlc0CdsGor-kqrqg_12IvhYM";
+                string chatId = "766231543";
+                string message = $"Новий товар додано на сайт!\nНазва: {product.Name}\nЦіна: {product.Price} грн.";
+
+                string telegramUrl = $"https://api.telegram.org/bot{botToken}/sendMessage?chat_id={chatId}&text={Uri.EscapeDataString(message)}";
+
+                using var httpClient = new HttpClient();
+                await httpClient.GetAsync(telegramUrl);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Помилка відправки в Telegram: {ex.Message}");
+            }
+
             return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
 
